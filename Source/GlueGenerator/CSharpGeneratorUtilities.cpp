@@ -145,21 +145,11 @@ namespace ScriptGeneratorUtilities
 			&& !InFunc->HasMetaData(NativeMakeFuncMetaDataKey);
 	}
 
-	bool IsBlueprintExposedField(const FField* InField)
-	{
-		if (const FProperty* Prop = Cast<const FProperty>(InField))
-		{
-			return IsBlueprintExposedProperty(Prop);
-		}
-
-		return false;
-	}
-
 	bool HasBlueprintExposedFields(const UStruct* InStruct)
 	{
-		for (TFieldIterator<const FField> FieldIt(InStruct); FieldIt; ++FieldIt)
+		for (TFieldIterator<const FProperty> FieldIt(InStruct); FieldIt; ++FieldIt)
 		{
-			if (IsBlueprintExposedField(*FieldIt))
+			if (IsBlueprintExposedProperty(*FieldIt))
 			{
 				return true;
 			}

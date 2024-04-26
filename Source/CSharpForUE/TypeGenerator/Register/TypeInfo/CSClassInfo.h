@@ -5,6 +5,8 @@
 #include "CSharpForUE/TypeGenerator/Register/CSMetaData.h"
 #include "UObject/Class.h"
 
+class FCSGeneratedClassBuilder;
+
 struct CSHARPFORUE_API FCSharpClassInfo : TCSharpTypeInfo<FClassMetaData, UClass, FCSGeneratedClassBuilder>
 {
 	FCSharpClassInfo(const TSharedPtr<FJsonValue>& MetaData) : TCSharpTypeInfo(MetaData)
