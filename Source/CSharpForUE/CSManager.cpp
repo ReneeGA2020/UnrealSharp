@@ -44,7 +44,7 @@ void FCSManager::InitializeUnrealSharp()
 	
 	if (DotNetInstallationPath.IsEmpty())
 	{
-		FString DialogText = FString::Printf(TEXT("UnrealSharp can't be initialized. An installation of .NET8 SDK can't be found on your system."));
+		FString DialogText = FString::Printf(TEXT("UnrealSharp can't be initialized. An installation of .NET9 SDK can't be found on your system."));
 		FMessageDialog::Open(EAppMsgType::Ok, FText::FromString(DialogText));
 		return;
 	}
