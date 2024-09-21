@@ -34,7 +34,9 @@ public static class WeaverHelper
     public static readonly string UFunctionAttribute = "UFunctionAttribute";
     public static readonly string UClassAttribute = "UClassAttribute";
     public static readonly string UInterfaceAttribute = "UInterfaceAttribute";
-    
+    public static readonly string UMultiDelegateAttribute = "UMultiDelegateAttribute";
+    public static readonly string USingleDelegateAttribute = "USingleDelegateAttribute";
+
     public static readonly string GeneratedTypeAttribute = "GeneratedTypeAttribute";
     public static readonly string BlittableTypeAttribute = "BlittableTypeAttribute";
     
@@ -237,7 +239,12 @@ public static class WeaverHelper
         return parameter;
     }
 
-    public static MethodDefinition CopyMethod(string name, MethodDefinition method, bool addMethod = true)
+    /// <param name="name">name the method copy will have</param>
+    /// <param name="method">original method</param>
+    /// <param name="addMethod">Add the method copy to the declaring type. this allows to use the original sources to be matched to the copy.</param>
+    /// <param name="copyMetadataToken"></param>
+    /// <returns>new instance of as copy of the original</returns>
+    public static MethodDefinition CopyMethod(string name, MethodDefinition method, bool addMethod = true, bool copyMetadataToken = true)
     {
         MethodDefinition newMethod = new MethodDefinition(name, method.Attributes, method.ReturnType)
         {
@@ -246,6 +253,11 @@ public static class WeaverHelper
             CallingConvention = method.CallingConvention,
             Body = method.Body
         };
+
+        if (copyMetadataToken)
+        {
+            newMethod.MetadataToken = method.MetadataToken;
+        }
 
         foreach (ParameterDefinition parameter in method.Parameters)
         {
@@ -625,14 +637,14 @@ public static class WeaverHelper
                     return new NativeDataNameType(typeDef, arrayDim);
                 }
             
-                if (typeDef.BaseType.Name.Contains("MulticastDelegate"))
+                if (typeDef.Name == "TMulticastDelegate`1")
                 {
-                    return new NativeDataMulticastDelegate(typeDef);
+                    return new NativeDataMulticastDelegate(typeRef);
                 }
             
-                if (typeDef.BaseType.Name.Contains("Delegate"))
+                if (typeDef.Name == "TDelegate`1")
                 {
-                    return new NativeDataDelegateType(typeRef, typeDef.Name + "Marshaller");
+                    return new NativeDataDelegateType(typeRef);
                 }
             
                 if (NativeDataDefaultComponent.IsDefaultComponent(customAttributes))
@@ -935,7 +947,17 @@ public static class WeaverHelper
     {
         return FindAttribute(type.CustomAttributes, UInterfaceAttribute);
     }
-        
+
+    public static CustomAttribute? GetUMultiDelegateInterface(TypeDefinition type)
+    {
+        return FindAttribute(type.CustomAttributes, UMultiDelegateAttribute);
+    }
+
+    public static CustomAttribute? GetUSingleDelegateInterface(TypeDefinition type)
+    {
+        return FindAttribute(type.CustomAttributes, USingleDelegateAttribute);
+    }
+
     public static bool IsUProperty(IMemberDefinition property)
     {
         return GetUProperty(property) != null;
@@ -950,7 +972,17 @@ public static class WeaverHelper
     {
         return GetUClass(typeDefinition) != null;
     }
-    
+
+    public static bool IsUMultiDelegate(TypeDefinition typeDefinition)
+    {
+        return GetUMultiDelegateInterface(typeDefinition) != null;
+    }
+
+    public static bool IsUSingleDelegate(TypeDefinition typeDefinition)
+    {
+        return GetUSingleDelegateInterface(typeDefinition) != null;
+    }
+
     public static bool IsGenerated(TypeDefinition typeDefinition)
     {
         return FindAttribute(typeDefinition.CustomAttributes, GeneratedTypeAttribute) != null;

@@ -40,6 +40,7 @@ public:
 	FOnUnrealSharpInitialized& OnUnrealSharpInitializedEvent() { return OnUnrealSharpInitialized; }
 	bool IsInitialized() const { return bIsInitialized; }
 
+	uint8* GetTypeHandle(uint8* AssemblyHandle, const FString& Namespace, const FString& TypeName) const;
 	uint8* GetTypeHandle(const FString& AssemblyName, const FString& Namespace, const FString& TypeName) const;
 	uint8* GetTypeHandle(const FCSTypeReferenceMetaData& TypeMetaData) const;
 
